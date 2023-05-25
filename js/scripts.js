@@ -69,8 +69,12 @@ const flappybird = {
     altura:24,
     x:10,
     y:50,
+    pulo: 4.6, 
+    pular (){
+        flappybird.valocidade = -flappybird.pulo; // aqui ele vai pegar a variavel de aceleração e ai vai negativar essa velocidade
+    },
     gravidade: 0.25, // numero que peguei do video e funcionou
-    valocidade:0 ,
+    valocidade:0,
     att(){
         flappybird.valocidade = flappybird.valocidade + flappybird.gravidade; // aqui a valocidade começa 0 e ai recebe velocidade que é 0 + gravidade 0,25 em loop
         flappybird.y = flappybird.y + flappybird.valocidade;
@@ -138,11 +142,14 @@ const Telas = {
   
 
 Telas.game = {
-    desenha()
-    {
+    desenha(){
         background.desenha(); // chamando a função do background
         chao.desenha (); // chamando minha função de chão
         flappybird.desenha (); // chamando minha função do bird
+    },
+
+    click() {
+        flappybird.pular();
     },
 
     att()
