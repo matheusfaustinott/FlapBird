@@ -71,7 +71,7 @@ const flappybird = {
     y:50,
     gravidade: 0.25, // numero que peguei do video e funcionou
     valocidade:0 ,
-    cair(){
+    att(){
         flappybird.valocidade = flappybird.valocidade + flappybird.gravidade; // aqui a valocidade começa 0 e ai recebe velocidade que é 0 + gravidade 0,25 em loop
         flappybird.y = flappybird.y + flappybird.valocidade;
     },
@@ -95,11 +95,33 @@ const flappybird = {
     }
 }
 
+// adicionar a tela de inicio 
+const inicio = {
+    spriteX:134,
+    spritesY:0,
+    largura:174 ,
+    altura:152,
+    x:(canvas.width/2) - 174 / 2,
+    y:50,
+    desenha(){
+        contexto.drawImage(
+            sprites,
+            inicio.spriteX, inicio.spritesY,
+            inicio.largura, inicio.altura,
+            inicio.x, inicio.y,
+            inicio.largura, inicio.altura,
+        ); 
+    }
+}
+// criar uma const para as telas
+
+
 function loop() {
     background.desenha(); // chamando a função do background
+    inicio.desenha(); // chamando a função
     chao.desenha (); // chamando minha função de chão
     flappybird.desenha (); // chamando minha função do bird
-    flappybird.cair(); // chamando minha função
+    flappybird.att(); // chamando minha função
     requestAnimationFrame(loop);
 } // desenha os quadros na tela em looping, FPS 
 // aqui a ordem de desenhos importa para sobrepor um ou outro
