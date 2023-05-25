@@ -114,16 +114,56 @@ const inicio = {
     }
 }
 // criar uma const para as telas
+let telaAtiva = {};
+function mudatela(novatela){
+    telaAtiva = novatela;
+}
+const Telas = {
+    start: {
+        desenha (){
+            background.desenha(); // chamando a função do background
+            chao.desenha (); // chamando minha função de chão
+            flappybird.desenha (); // chamando minha função do bird
+            inicio.desenha(); },
 
+        click() {
+            mudatela(Telas.game);
+        },
+        
+        att(){
+
+        }
+    }
+};
+  
+
+Telas.game = {
+    desenha()
+    {
+        background.desenha(); // chamando a função do background
+        chao.desenha (); // chamando minha função de chão
+        flappybird.desenha (); // chamando minha função do bird
+    },
+
+    att()
+    {
+        flappybird.att(); // chamando minha função
+    }
+};
 
 function loop() {
-    background.desenha(); // chamando a função do background
-    inicio.desenha(); // chamando a função
-    chao.desenha (); // chamando minha função de chão
-    flappybird.desenha (); // chamando minha função do bird
-    flappybird.att(); // chamando minha função
+    telaAtiva.desenha();
+    telaAtiva.att();
+
     requestAnimationFrame(loop);
 } // desenha os quadros na tela em looping, FPS 
 // aqui a ordem de desenhos importa para sobrepor um ou outro
 
+window.addEventListener('click', function() {
+    if(telaAtiva.click) {
+      telaAtiva.click();
+    }
+  });
+
+mudatela(Telas.start);
 loop();
