@@ -211,7 +211,7 @@ function criaCanos() {
         temcolisaocomobird(par){
             const head = globais.flappybird.y;
             const foot = globais.flappybird.y + globais.flappybird.altura;
-            if(globais.flappybird.x >= par.x){
+            if(globais.flappybird.x + globais.flappybird.largura>= par.x){
                 if(head <= par.canoCeu.y){
                     return true;
                 }
@@ -219,7 +219,6 @@ function criaCanos() {
                     return true;
                 }
             }
-            return true;
             return false;
         },
         pares: [{}],
@@ -235,7 +234,11 @@ function criaCanos() {
                 par.x = par.x -2;
 
                 if(canos.temcolisaocomobird(par)){
-                    console.log("voce perdeu")
+                    
+                    die.play(); // da play no audio
+                    setTimeout(() => {
+                        mudatela(Telas.start);
+                    },250);
                 }
 
                 if(par.x + canos.largura <= 0){
