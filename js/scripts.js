@@ -98,11 +98,11 @@ function newbird(){
         altura:24,
         x:10,
         y:50,
-        pulo: 4.6, // aqui eu add uma variavel do tamanho do pulo do bird
+        pulo: 3.6, // aqui eu add uma variavel do tamanho do pulo do bird
         pular (){
             flappybird.valocidade = -flappybird.pulo; // aqui ele vai pegar a variavel de aceleração e ai vai negativar essa velocidade com a do pulo
         },
-        gravidade: 0.25, // numero que peguei do video e funcionou
+        gravidade: 0.20, // numero que peguei do video e funcionou
         valocidade:0, // velocidade inicial que vai aumentar com a gravidade(ou seja v = Δs/Δt formula da velocidade)
         att(){
             if(colisao(flappybird, globais.chao)){
@@ -122,9 +122,17 @@ function newbird(){
 			{ spriteX: 0, spriteY: 26, }, // asa no meio 
 		  ],
 		  
-		frameatual:0,
+		frameatual: 0,
 		attframe (){
-
+            // console.log("frames")
+            const intervaloDeFrames = 10;
+            const passouOIntervalo = frames % intervaloDeFrames === 0;
+            if(passouOIntervalo) {
+              const baseDoIncremento = 1;
+              const incremento = baseDoIncremento + flappybird.frameatual;
+              const baseRepeticao = flappybird.movimentos.length;
+              flappybird.frameatual = incremento % baseRepeticao
+            }
 		},
         desenha(){
 			flappybird.attframe();
@@ -140,7 +148,7 @@ function newbird(){
                 // dWidth, 
                 // dHeight
                 sprites,
-                flappybird.spriteX, flappybird.spritesY,
+                spriteX, spriteY,
                 flappybird.largura, flappybird.altura,
                 flappybird.x, flappybird.y,
                 flappybird.largura, flappybird.altura,
@@ -150,6 +158,95 @@ function newbird(){
     return flappybird;
 } 
 
+//função pra criar canos
+function criaCanos() {
+    const canos = {
+        largura: 52,
+        altura: 400,
+        chao: {
+            spriteX: 0,
+            spriteY: 169,
+        },
+        ceu: {
+            spriteX: 52,
+            spriteY: 169,
+        },
+        espaco: 80,
+        desenha() {
+// para cada par de canos que eu tiver, vou desenhar os valores
+            canos.pares.forEach(function(par){
+                const yRandom = par.y;
+                const spaceforcanos = 95;
+// camos de cima
+                const canoCeuX = par.x;
+                const canoCeuY = yRandom;
+                contexto.drawImage(
+                    sprites, 
+                    canos.ceu.spriteX, canos.ceu.spriteY,
+                    canos.largura, canos.altura,
+                    canoCeuX, canoCeuY,
+                    canos.largura, canos.altura,
+                )
+// canos de baixo
+                const canoChaoX = par.x;
+                const canoChaoY = canos.altura + spaceforcanos + yRandom; 
+                contexto.drawImage(
+                    sprites, 
+                    canos.chao.spriteX, canos.chao.spriteY,
+                    canos.largura, canos.altura,
+                    canoChaoX, canoChaoY,
+                    canos.largura, canos.altura,
+                )
+                par.canoCeu={
+                    x:canoCeuX,
+                    y:canos.altura + canoCeuY
+                }
+                par.canoChao={
+                    x:canoChaoX,
+                    y:canoChaoY
+                }
+            })
+
+        },
+        temcolisaocomobird(par){
+            const head = globais.flappybird.y;
+            const foot = globais.flappybird.y + globais.flappybird.altura;
+            if(globais.flappybird.x >= par.x){
+                if(head <= par.canoCeu.y){
+                    return true;
+                }
+                if(foot >= par.canoChao.y){
+                    return true;
+                }
+            }
+            return true;
+            return false;
+        },
+        pares: [{}],
+        att(){
+            const before100frames = frames % 100 === 0; // depois de 100 frames ele vai adicionar um frame
+            if(before100frames){
+                canos.pares.push({ 
+                    x:canvas.width,
+                    y:- 150 * (Math.random() + 0.8 ), // gera valores aleatórios,
+                });
+            }  
+            canos.pares.forEach(function(par){
+                par.x = par.x -2;
+
+                if(canos.temcolisaocomobird(par)){
+                    console.log("voce perdeu")
+                }
+
+                if(par.x + canos.largura <= 0){
+                    // console.log(canos.pares); // ver os arrays 
+                    canos.pares.shift(); // exclui os canos 
+                }
+            });
+        }
+    }
+    return canos;
+}
 // adicionar a tela de inicio 
 const inicio = {
     spriteX:134,
@@ -184,11 +281,13 @@ const Telas = {
         inicializa(){
             globais.flappybird = newbird();
 			globais.chao = Criachao();
+            globais.canos = criaCanos();
         },
         desenha (){
-            background.desenha(); // chamando a função do background
+            background.desenha(); // chamando a função do background             
+            globais.flappybird.desenha ();// chamando minha função do bird          
+            globais.canos.desenha ();  
             globais.chao.desenha (); // chamando minha função de chão
-            globais.flappybird.desenha (); // chamando minha função do bird
             inicio.desenha(); 
         },
 
@@ -206,6 +305,7 @@ const Telas = {
 Telas.game = {
     desenha(){
         background.desenha(); // chamando a função do background
+        globais.canos.desenha ();
         globais.chao.desenha (); // chamando minha função de chão
         globais.flappybird.desenha (); // chamando minha função do bird
     },
@@ -217,6 +317,8 @@ Telas.game = {
 
     att()
     {
+        globais.canos.att ();
+        globais.chao.att();
         globais.flappybird.att(); // chamando minha função
     }
 };
