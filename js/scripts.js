@@ -209,8 +209,8 @@ function criaCanos() {
 
         },
         temcolisaocomobird(par){
-            const head = globais.flappybird.y;
-            const foot = globais.flappybird.y + globais.flappybird.altura;
+            const head = globais.flappybird.y + 10;
+            const foot = globais.flappybird.y + globais.flappybird.altura  - 20 ;
             if(globais.flappybird.x + globais.flappybird.largura>= par.x){
                 if(head <= par.canoCeu.y){
                     return true;
@@ -279,6 +279,28 @@ function mudatela(novatela){
     }
 }
 
+function criaScore(){
+    const placar = {
+        score: 0,
+        desenha(){
+            contexto.font = '20px "Cherry Bomb One"';
+            contexto.fillStyle ='white';
+            contexto.fillText(`Score: ${placar.score} `, canvas.width -90 ,35);
+        },
+
+        att(){
+            const intervaloDeFrames = 30;
+            const passouOIntervalo = frames % intervaloDeFrames === 0;
+            if(passouOIntervalo){
+                placar.score = placar.score + 1;
+            }
+            
+
+        }
+    }
+    return placar;
+}
+
 const Telas = {
     start: {
         inicializa(){
@@ -306,11 +328,16 @@ const Telas = {
   
 
 Telas.game = {
+    inicializa(){
+        globais.score = criaScore();
+    },
+
     desenha(){
         background.desenha(); // chamando a função do background
         globais.canos.desenha ();
         globais.chao.desenha (); // chamando minha função de chão
         globais.flappybird.desenha (); // chamando minha função do bird
+        globais.score.desenha (); // chamando
     },
 
     click() {
@@ -323,6 +350,7 @@ Telas.game = {
         globais.canos.att ();
         globais.chao.att();
         globais.flappybird.att(); // chamando minha função
+        globais.score.att(); // placar
     }
 };
 
